@@ -44,7 +44,7 @@ android {
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            minifyEnabled true
+            minifyEnabled false
 
             // Use different keys for different flavors of app
             productFlavors.all { flavor ->
@@ -55,16 +55,21 @@ android {
 
                     flavor.signingConfig = android.signingConfigs.create("${flavor.name}")
                     flavor.signingConfig.storeFile = rootProject.file(keystoreProperties["storeFile"])
+                    if(!flavor.signingConfig.storeFile.exists()) {
+                        throw new GradleException("Keystore $flavor.signingConfig.storeFile not found!")
+                    }
                     flavor.signingConfig.storePassword = keystoreProperties["storePassword"]
                     flavor.signingConfig.keyAlias = keystoreProperties["keyAlias"]
                     flavor.signingConfig.keyPassword = keystoreProperties["keyPassword"]
+                } else {
+                    println "signing properties file $keystorePropertiesFile not found"
                 }
             }
-
+/*
             manifestPlaceholders.analyticsCollectionEnabled = true
             manifestPlaceholders.crashlyticsCollectionEnabled = true
             manifestPlaceholders.performanceCollectionEnabled = true
-
+*/
             //debuggable true
         }
     }
@@ -99,10 +104,10 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:29.0.0')
+    /*implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx:20.0.2'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.6'
-    implementation 'com.google.firebase:firebase-perf-ktx:20.0.4'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.0.4'*/
 
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.16.1'
